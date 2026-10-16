@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Records')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+
+    <div class="alerts" th:if="${message != null or error != null}">
+        <div class="alert alert-success" th:if="${message != null}" role="status">
+            <span class="alert-icon"><span class="material-symbols-outlined">check_circle</span></span>
+            <span class="alert-text" th:text="${message}"></span>
+            <button type="button" class="alert-close" data-dismiss aria-label="Dismiss">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="alert alert-error" th:if="${error != null}" role="alert">
+            <span class="alert-icon"><span class="material-symbols-outlined">warning</span></span>
+            <span class="alert-text" th:text="${error}"></span>
+            <button type="button" class="alert-close" data-dismiss aria-label="Dismiss">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Registry Directory</span>
+            <h1>Student Records</h1>
+            <p class="lead">Add, update and look up student records and their course assignments.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/students/new}">
+            <span class="material-symbols-outlined">add</span> Add Student
+        </a>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div>
+                <p class="stat-label">Total Students</p>
+                <p class="stat-value" th:text="${totalStudents}">0</p>
+                <p class="stat-note">Registered in the system</p>
+            </div>
+            <span class="stat-icon tone-0"><span class="material-symbols-outlined">school</span></span>
+        </div>
+        <div class="stat-card">
+            <div>
+                <p class="stat-label">Courses</p>
+                <p class="stat-value" th:text="${totalCourses}">0</p>
+                <p class="stat-note">Different courses in use</p>
+            </div>
+            <span class="stat-icon tone-1"><span class="material-symbols-outlined">menu_book</span></span>
+        </div>
+        <div class="stat-card">
+            <div>
+                <p class="stat-label">Showing</p>
+                <p class="stat-value" th:text="${#lists.size(students)}">0</p>
+                <p class="stat-note" th:text="${#strings.isEmpty(q)} ? 'All records' : 'Matching your search'">All records</p>
+            </div>
+            <span class="stat-icon tone-3"><span class="material-symbols-outlined">filter_list</span></span>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <form class="search-form" th:action="@{/students}" method="get">
+            <div class="search-box">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" name="q" th:value="${q}"
+                       placeholder="Search by name, student number or course">
+            </div>
+            <button class="btn btn-secondary" type="submit">Search</button>
+            <a class="btn btn-outline" th:href="@{/students}" th:unless="${#strings.isEmpty(q)}">Clear</a>
+        </form>
+    </div>
+
+    <div class="result-line">
+        <strong th:text="${#lists.size(students)}">0</strong>
+        <span th:text="${#lists.size(students) == 1} ? 'student' : 'students'">students</span>
+        <span th:unless="${#strings.isEmpty(q)}">matching "<span th:text="${q}"></span>"</span>
+    </div>
+
+    <div class="table-card">
+
+        <div class="table-scroll" th:unless="${#lists.isEmpty(students)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Student No.</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${students}">
+                    <td><span class="student-no" th:text="${s.studentNumber}"></span></td>
+                    <td>
+                        <div class="person">
+                            <span class="avatar" th:data-name="${s.firstName + ' ' + s.lastName}"></span>
+                            <span class="person-name" th:text="${s.firstName + ' ' + s.lastName}"></span>
+                        </div>
+                    </td>
+                    <td><a class="mail" th:href="'mailto:' + ${s.email}" th:text="${s.email}"></a></td>
+                    <td><span class="pill" th:text="${s.course}"></span></td>
+                    <td>
+                        <div class="row-actions">
+                            <a class="icon-action edit" title="Edit student"
+                               th:href="@{/students/{id}/edit(id=${s.id})}">
+                                <span class="material-symbols-outlined">edit</span>
+                            </a>
+                            <button type="button" class="icon-action delete btn-delete" title="Delete student"
+                                    th:data-action="@{/students/{id}/delete(id=${s.id})}"
+                                    th:data-name="${s.firstName + ' ' + s.lastName}"
+                                    th:data-number="${s.studentNumber}">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty" th:if="${#lists.isEmpty(students)}">
+            <div class="empty-icon"><span class="material-symbols-outlined">person_search</span></div>
+            <h3>No students found</h3>
+            <p th:text="${#strings.isEmpty(q)} ? 'There are no student records yet. Add the first one to get started.' : 'Nothing matches your search. Try different words or clear the search.'">
+                No students.</p>
+            <a class="btn btn-outline" th:href="@{/students}" th:unless="${#strings.isEmpty(q)}">Clear search</a>
+            <a class="btn btn-primary" th:href="@{/students/new}" th:if="${#strings.isEmpty(q)}">
+                <span class="material-symbols-outlined">add</span> Add Student
+            </a>
+        </div>
+    </div>
+</main>
+
+<div class="modal-backdrop" id="delete-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+        <div class="modal-body">
+            <div class="modal-icon"><span class="material-symbols-outlined">delete_forever</span></div>
+            <div>
+                <h2 id="delete-title">Delete this student?</h2>
+                <p>
+                    You are about to delete <strong id="delete-name"></strong>
+                    (<span id="delete-number"></span>). This cannot be undone.
+                </p>
+            </div>
+        </div>
+        <form id="delete-form" method="post">
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+                <button type="submit" class="btn btn-danger">
+                    <span class="material-symbols-outlined">delete</span> Delete Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

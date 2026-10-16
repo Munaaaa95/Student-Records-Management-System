@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${student.id == null ? 'Add Student' : 'Edit Student'})}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div class="form-wrap">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a th:href="@{/students}">
+                <span class="material-symbols-outlined">school</span> Students
+            </a>
+            <span class="material-symbols-outlined sep">chevron_right</span>
+            <span class="crumb-current" th:text="${student.id == null ? 'Add Student' : 'Edit Student'}">Add Student</span>
+        </nav>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Registry Form</span>
+                <h1 th:text="${student.id == null ? 'New Student Enrollment' : 'Edit Student Record'}">New Student Enrollment</h1>
+                <p class="lead">Fields marked <span class="req">*</span> are required.</p>
+            </div>
+        </div>
+
+        <form class="form-card" th:object="${student}" method="post" novalidate
+              th:action="${student.id == null} ? @{/students} : @{/students/{id}(id=${student.id})}">
+
+            <div class="form-banner" th:if="${#fields.hasErrors('*')}" role="alert">
+                <span class="material-symbols-outlined">report_problem</span>
+                <span>
+                    Please fix
+                    <span th:text="${#lists.size(#fields.errors('*'))}">1</span>
+                    <span th:text="${#lists.size(#fields.errors('*')) == 1} ? 'problem' : 'problems'">problems</span>
+                    below before saving.
+                </span>
+            </div>
+
+            <div class="form-body">
+
+                <section class="form-section">
+                    <div class="section-head">
+                        <span class="section-badge">A</span>
+                        <div>
+                            <h2>Student Identification</h2>
+                            <p>The unique number used to identify this student.</p>
+                        </div>
+                    </div>
+
+                    <div class="field" th:classappend="${#fields.hasErrors('studentNumber')} ? 'has-error'">
+                        <label for="studentNumber">Student Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <input type="text" th:field="*{studentNumber}" placeholder="e.g. STU001" autocomplete="off">
+                            <span class="material-symbols-outlined field-icon"
+                                  th:if="${#fields.hasErrors('studentNumber')}">error</span>
+                        </div>
+                        <p class="error-msg" th:if="${#fields.hasErrors('studentNumber')}">
+                            <span class="material-symbols-outlined">warning</span>
+                            <span th:errors="*{studentNumber}"></span>
+                        </p>
+                        <p class="help" th:unless="${#fields.hasErrors('studentNumber')}">
+                            Letters and digits only. Must be unique.</p>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <div class="section-head">
+                        <span class="section-badge">B</span>
+                        <div>
+                            <h2>Personal Information</h2>
+                            <p>Name and contact email.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field" th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
+                            <label for="firstName">First Name <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <input type="text" th:field="*{firstName}" placeholder="Given name">
+                                <span class="material-symbols-outlined field-icon"
+                                      th:if="${#fields.hasErrors('firstName')}">error</span>
+                            </div>
+                            <p class="error-msg" th:if="${#fields.hasErrors('firstName')}">
+                                <span class="material-symbols-outlined">warning</span>
+                                <span th:errors="*{firstName}"></span>
+                            </p>
+                            <p class="help" th:unless="${#fields.hasErrors('firstName')}">
+                                Letters, spaces, hyphens and apostrophes.</p>
+                        </div>
+
+                        <div class="field" th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
+                            <label for="lastName">Last Name <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <input type="text" th:field="*{lastName}" placeholder="Surname">
+                                <span class="material-symbols-outlined field-icon"
+                                      th:if="${#fields.hasErrors('lastName')}">error</span>
+                            </div>
+                            <p class="error-msg" th:if="${#fields.hasErrors('lastName')}">
+                                <span class="material-symbols-outlined">warning</span>
+                                <span th:errors="*{lastName}"></span>
+                            </p>
+                            <p class="help" th:unless="${#fields.hasErrors('lastName')}">
+                                Letters, spaces, hyphens and apostrophes.</p>
+                        </div>
+
+                        <div class="field span-2" th:classappend="${#fields.hasErrors('email')} ? 'has-error'">
+                            <label for="email">Email Address <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <input type="text" th:field="*{email}" placeholder="name@example.com">
+                                <span class="material-symbols-outlined field-icon"
+                                      th:if="${#fields.hasErrors('email')}">error</span>
+                            </div>
+                            <p class="error-msg" th:if="${#fields.hasErrors('email')}">
+                                <span class="material-symbols-outlined">warning</span>
+                                <span th:errors="*{email}"></span>
+                            </p>
+                            <p class="help" th:unless="${#fields.hasErrors('email')}">
+                                Used for official communication.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <div class="section-head">
+                        <span class="section-badge">C</span>
+                        <div>
+                            <h2>Academic Program</h2>
+                            <p>The course this student is enrolled in.</p>
+                        </div>
+                    </div>
+
+                    <div class="field" th:classappend="${#fields.hasErrors('course')} ? 'has-error'">
+                        <label for="course">Course <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <input type="text" th:field="*{course}" placeholder="e.g. Computer Science">
+                            <span class="material-symbols-outlined field-icon"
+                                  th:if="${#fields.hasErrors('course')}">error</span>
+                        </div>
+                        <p class="error-msg" th:if="${#fields.hasErrors('course')}">
+                            <span class="material-symbols-outlined">warning</span>
+                            <span th:errors="*{course}"></span>
+                        </p>
+                        <p class="help" th:unless="${#fields.hasErrors('course')}">
+                            Letters, spaces and basic punctuation.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="form-footer">
+                <a class="btn btn-outline" th:href="@{/students}">Cancel</a>
+                <button class="btn btn-primary" type="submit">
+                    <span class="material-symbols-outlined">save</span> Save Student
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

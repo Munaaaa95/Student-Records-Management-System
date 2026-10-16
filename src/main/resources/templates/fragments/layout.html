@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · StudentHub'">StudentHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+
+<body>
+
+<header class="site-header" th:fragment="header">
+    <div class="header-inner">
+        <a class="brand" th:href="@{/students}">
+            <span class="brand-mark"><span class="material-symbols-outlined">school</span></span>
+            <span class="brand-text">
+                <span class="brand-name">StudentHub</span>
+                <span class="brand-sub">Records Management System</span>
+            </span>
+        </a>
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+            <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+    </div>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+    StudentHub Records Management System
+</footer>
+
+</body>
+</html>
